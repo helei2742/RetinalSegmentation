@@ -84,10 +84,15 @@ public class InitController {
      */
     @PostMapping("/tempSegmentation")
     public Result imgSegmentation(String srcImgPath) {
+        return imgResolveService.imgSegmentation(srcImgPath);
+    }
 
-        String idNumber = IdNumberHolder.getIdNumber();
-        String resultImgPath = FileUtil.getTempResultImgPath(idNumber);
 
-        return imgResolveService.imgSegmentation(srcImgPath, resultImgPath);
+    /**
+     * 临时用户查看原图是否有切割完的图像
+     */
+    @PostMapping("/isHaveSegmentation")
+    public Result isHaveSegmentation(String srcImgPath) {
+        return imgResolveService.isHaveSegmentation(srcImgPath);
     }
 }

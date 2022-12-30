@@ -23,7 +23,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //获取请求头的token
-        String token = request.getHeader("authorization");
+        String token = request.getHeader("userToken");
 
         //redis获取用户
         String json = stringRedisTemplate.opsForValue().get(RedisConstants.USER_LOGIN_TOKEN_KEY + token);

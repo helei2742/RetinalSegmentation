@@ -2,6 +2,7 @@ package org.helei.retinalsegmentation.service.impl;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.helei.retinalsegmentation.common.threadlocal.UserHolder;
@@ -50,7 +51,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    @Transactional
     @Override
     public Result registerUser(User user) {
         String password = user.getPassword();
@@ -70,6 +70,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(RegexUtils.isEmailInvalid(user.getEmail())) {
             return Result.fail("邮箱格式错误");
         }
+
+        //TODO 判断邮箱是否被使用，或者正在激活
+
 
         user.setIsValid(false);
         user.setPassword(PasswordEncoder.encode(password));
@@ -180,7 +183,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         stringRedisTemplate.opsForValue().set(tokenKey, JSONUtil.toJsonStr(userDTO),
                 RedisConstants.USER_LOGIN_TOKEN_TTL, TimeUnit.DAYS);
 
-        return Result.ok(JSONUtil.createObj().set("token", token));
+        JSONObject object = JSONUtil.createObj().set("token", token)
+                .set("loginUser", UserConverter.INSTANCE.entity2dto(dbUser));
+        return Result.ok(object);
+    }
+
+    @Override
+    public Result noPasswordValid() {
+        return Result.ok(UserHolder.getUser());
     }
 
 
@@ -195,6 +205,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         //TODO 可为登陆用户添加新的功能
+
+        //保存上传记录
 
         String username = UserHolder.getUser().getUsername();
         String saveFile = "";

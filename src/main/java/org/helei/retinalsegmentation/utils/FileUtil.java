@@ -168,4 +168,14 @@ public class FileUtil {
     public static String getFilePathFromCTP(String path) {
         return contextPath + "/" + path;
     }
+
+    /**
+     *  /images/temp/srcImages/67177330073665542/Src_167198654608353DX.jpg
+     *  这样的url路径转换为物理路径
+     * @param srcImgPath
+     * @return
+     */
+    public static String getTruePath(String srcImgPath) {
+        return contextPath + srcImgPath;
+    }
 }

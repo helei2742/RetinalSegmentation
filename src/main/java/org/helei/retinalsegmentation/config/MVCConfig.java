@@ -35,6 +35,8 @@ public class MVCConfig implements WebMvcConfigurer {
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
                 .addPathPatterns("/user/**")
                 .excludePathPatterns(
+                        "/user/register",
+                        "/user/confirm/**",
                         "/user/validCode",
                         "/user/login")
                 .order(2);
@@ -42,6 +44,8 @@ public class MVCConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/user/**")
                 .excludePathPatterns(
+                        "/user/register",
+                        "/user/confirm/**",
                         "/user/validCode",
                         "/user/login")
                 .order(3);
@@ -59,7 +63,6 @@ public class MVCConfig implements WebMvcConfigurer {
             file.mkdir();
         }
         String resourceLocation=file.getAbsolutePath()+File.separatorChar;
-        System.out.println(resourceLocation+">>>>>>");
 
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:"+resourceLocation);

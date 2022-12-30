@@ -44,4 +44,10 @@ public interface IUserService extends IService<User>, FileService{
      * @return
      */
     Result login(String username, String password, String code);
+
+    /**
+     * 无密码验证登陆状态，根据header中的token
+     * @return
+     */
+    Result noPasswordValid();
 }

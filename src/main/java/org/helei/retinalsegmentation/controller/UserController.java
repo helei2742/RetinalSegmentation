@@ -2,6 +2,8 @@ package org.helei.retinalsegmentation.controller;
 
 
 import org.helei.retinalsegmentation.dto.Result;
+import org.helei.retinalsegmentation.dto.UserDTO;
+import org.helei.retinalsegmentation.dto.UserLoginDTO;
 import org.helei.retinalsegmentation.entity.User;
 import org.helei.retinalsegmentation.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping("/register")
-    public Result registerUser(User user){
+    public Result registerUser(@RequestBody User user){
         return userService.registerUser(user);
     }
 
@@ -42,8 +44,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Result login(String username, String password, String code) {
-        return userService.login(username, password, code);
+    public Result login(@RequestBody UserLoginDTO loginDTO) {
+        return userService.login(loginDTO.getUsername(), loginDTO.getPassword(), loginDTO.getCheckCode());
+    }
+
+    @PostMapping("/noPasswordValid")
+    public Result noPasswordValid() {
+        return userService.noPasswordValid();
     }
 
     @PostMapping("/uploadSrcImage")

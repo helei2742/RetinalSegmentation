@@ -30,10 +30,10 @@ public class User implements Serializable {
       private String username;
 
       @ApiModelProperty("密码")
-      @TableField(fill = FieldFill.INSERT)
       private String password;
 
       @ApiModelProperty("头像图标地址")
+      @TableField(fill = FieldFill.INSERT)
       private String icon;
 
       @ApiModelProperty("邮箱")

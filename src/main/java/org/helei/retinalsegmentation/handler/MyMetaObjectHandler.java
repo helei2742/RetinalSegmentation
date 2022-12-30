@@ -27,7 +27,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
         this.setFieldValByName("createTime", LocalDateTime.now(), metaObject);
         this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
-        this.setFieldValByName("password", "123456", metaObject);
+        this.setFieldValByName("icon", "user/icon/defalut.png", metaObject);
     }
 
     @Override

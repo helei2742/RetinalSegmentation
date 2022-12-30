@@ -9,5 +9,12 @@ public interface ImgResolveService {
      * @param srcImgPath
      * @return
      */
-    Result imgSegmentation(String srcImgPath, String targetPath);
+    Result imgSegmentation(String srcImgPath);
+
+    /**
+     * 查看是否有切割完的结果
+     * @param srcImgPath
+     * @return
+     */
+    Result isHaveSegmentation(String srcImgPath);
 }

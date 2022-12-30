@@ -16,7 +16,7 @@ public class CorsFilter implements Filter {
         res.addHeader("Access-Control-Allow-Credentials", "true");
          res.addHeader("Access-Control-Allow-Origin", "http://localhost:8080");
         res.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-        res.addHeader("Access-Control-Allow-Headers", "Content-Type,X-CAF-Authorization-Token,sessionToken,X-TOKEN,authorization,IdNumber");
+        res.addHeader("Access-Control-Allow-Headers", "Content-Type,X-CAF-Authorization-Token,sessionToken,X-TOKEN,authorization,IdNumber,userToken");
         if (((HttpServletRequest) request).getMethod().equals("OPTIONS")) {
             response.getWriter().println("ok");
             return;
