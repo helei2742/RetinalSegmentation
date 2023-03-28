@@ -8,10 +8,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.helei.retinalsegmentation.common.threadlocal.UserHolder;
 import org.helei.retinalsegmentation.converter.UserConverter;
 import org.helei.retinalsegmentation.dto.Result;
+import org.helei.retinalsegmentation.dto.UserAlterForm;
 import org.helei.retinalsegmentation.dto.UserDTO;
+import org.helei.retinalsegmentation.dto.UserInfo;
 import org.helei.retinalsegmentation.entity.User;
+import org.helei.retinalsegmentation.entity.UserUploadRecord;
 import org.helei.retinalsegmentation.mapper.UserMapper;
+import org.helei.retinalsegmentation.query.UploadRecordQuery;
 import org.helei.retinalsegmentation.service.IUserService;
+import org.helei.retinalsegmentation.service.IUserUploadRecordService;
+import org.helei.retinalsegmentation.service.IUserUserUploadRecordService;
 import org.helei.retinalsegmentation.service.MailService;
 import org.helei.retinalsegmentation.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +56,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private IUserUploadRecordService userUploadRecordService;
+
+
 
     @Override
     public Result registerUser(User user) {
@@ -193,6 +204,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return Result.ok(UserHolder.getUser());
     }
 
+    @Override
+    public Result alterPassword(UserAlterForm form) {
+        String confirmPwd = form.getConfirmPwd();
+        String newPwd = form.getNewPwd();
+        String oldPwd = form.getOldPwd();
+        if(StrUtil.isBlank(oldPwd) ||
+                StrUtil.isBlank(newPwd) ||
+                StrUtil.isBlank(confirmPwd)) {
+            return Result.fail("数据不能含空");
+        }
+        if(!confirmPwd.equals(newPwd)) {
+            return Result.fail("两次输入密码不一致");
+        }
+        if(confirmPwd.equals(oldPwd)) {
+            return Result.fail("修改前后密码不能相同");
+        }
+        Long uid = form.getUid();
+        if(uid == null) {
+            return Result.fail("缺少用户id");
+        }
+
+        User dbUser = query().eq("id", uid).one();
+        if(dbUser == null) {
+            return Result.fail("不存在该用户");
+        }
+
+        if(!PasswordEncoder.matches(dbUser.getPassword(), oldPwd)) {
+            return Result.fail("原密码错误");
+        }
+
+        boolean update = update()
+                .set("password", PasswordEncoder.encode(newPwd))
+                .eq("id", uid)
+                .update();
+        if(!update) return Result.fail("修改失败");
+        return Result.ok();
+    }
+
+    @Override
+    public Result getUserInfo() {
+        Long uid = UserHolder.getUser().getId();
+        User user = query().eq("id", uid).one();
+        UserInfo info = userUploadRecordService.queryCount(uid);
+        info.setUsername(user.getUsername());
+        info.setCreateTime(user.getCreateTime());
+        info.setEmail(user.getEmail());
+        return Result.ok(info);
+    }
 
     @Override
     public Result uploadSrcImage(MultipartFile file) {
@@ -206,31 +265,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         //TODO 可为登陆用户添加新的功能
 
-        //保存上传记录
 
-        String username = UserHolder.getUser().getUsername();
-        String saveFile = "";
+        UserUploadRecord uploadRecord = null;
         try {
-            saveFile = FileUtil.saveFile(file, FileUtil.getUserUploadSrcImagePath(username));
+            String username = UserHolder.getUser().getUsername();
+            String saveFile = FileUtil.saveFile(file, FileUtil.getUserUploadSrcImagePath(username));
+            //记录
+            uploadRecord = userUploadRecordService
+                    .recordUserUpload(UserHolder.getUser().getId(), FileUtil.getSourcePath(saveFile));
         } catch (IOException e) {
             e.printStackTrace();
             Result.fail("保存文件出错");
         }
-        return Result.ok(saveFile);
+        return Result.ok(uploadRecord);
     }
 
-    @Override
-    public Result getSrcImageList() {
-        String username = UserHolder.getUser().getUsername();
-        File userDir = new File(FileUtil.getUserUploadSrcImagePath(username));
-        String[] strs = null;
-        if((strs = userDir.list()) == null || strs.length == 0) {
-            return Result.fail("null");
-        }
-        List<String> collect = Arrays.stream(strs)
-                .map(s->"/images/user/"+username+"/resImages/"+s)
-                .collect(Collectors.toList());
-
-        return Result.ok(collect);
-    }
 }

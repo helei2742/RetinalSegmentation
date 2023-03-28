@@ -2,6 +2,7 @@ package org.helei.retinalsegmentation.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.helei.retinalsegmentation.dto.Result;
+import org.helei.retinalsegmentation.dto.UserAlterForm;
 import org.helei.retinalsegmentation.entity.User;
 
 import javax.servlet.http.HttpServletResponse;
@@ -50,4 +51,17 @@ public interface IUserService extends IService<User>, FileService{
      * @return
      */
     Result noPasswordValid();
+
+    /**
+     * 修改密码
+     * @param form
+     * @return
+     */
+    Result alterPassword(UserAlterForm form);
+
+    /**
+     * 获取用户个人信息页面的各种数据
+     * @return
+     */
+    Result getUserInfo();
 }

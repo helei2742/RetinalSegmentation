@@ -1,6 +1,7 @@
 package org.helei.retinalsegmentation.utils;
 
 
+import cn.hutool.core.util.RandomUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -53,8 +54,7 @@ public class FileUtil {
      * @return
      */
     public static String getSaveFileName(String fileName){
-        return "Src_"+
-                new Date().getTime()+new Random().nextInt(99)
+        return "Src_"+ RandomUtil.randomNumbers(4) +"_"
                 + fileName;
     }
 
@@ -151,12 +151,22 @@ public class FileUtil {
         return contextPath + "/images/temp/resImages/" + idNumber;
     }
 
+
+    /**
+     * 获取注册用户上传图片路径
+     * @param username
+     * @return
+     */
+    public static String getUserUploadSrcImagePath(String username) {
+        return contextPath + "/images/user/"+username+"/srcImages";
+    }
+
     /**
      * 获取组册用户结果图片路径
      * @param username
      * @return
      */
-    public static String getUserUploadSrcImagePath(String username) {
+    public static String getUserUploadResImagePath(String username) {
         return contextPath + "/images/user/"+username+"/resImages";
     }
 
@@ -177,5 +187,14 @@ public class FileUtil {
      */
     public static String getTruePath(String srcImgPath) {
         return contextPath + srcImgPath;
+    }
+
+    /**
+     * 物理路径换成 /images/temp/srcImages/67177330073665542/Src_167198654608353DX.jpg 这样的路径
+     * @param truePath
+     * @return
+     */
+    public static String getSourcePath(String truePath) {
+        return truePath.split(contextPath)[1];
     }
 }

@@ -1,21 +1,26 @@
-package org.helei.retinalsegmentation;
+package org.helei.retinalsegmentation.utils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class Test {
+public class DetectionUtil {
+    private final static int[][] DIRECTIONS = {{0,1},{1,0},{-1,0},{0,-1}};
+
     static class UnionFind {
+        int width = 0;
+        int height = 0;
         private final int[] father;
         private final int[] size;
         private int count;
 
-        UnionFind(int size, int count) {
+        UnionFind(int size, int count, int width, int height) {
+            this.width = width;
+            this.height = height;
             this.count = count;
             this.father = new int[size];
             this.size = new int[size];
@@ -50,10 +55,10 @@ public class Test {
         public HashSet<Integer> getFathers(int[][] grid) {
             HashSet<Integer> res = new HashSet<>();
             for (int idx = 0; idx < this.size.length-1; idx++) {
-                int x = idx/height;
-                int y = idx%height;
+                int x = idx/this.height;
+                int y = idx%this.height;
                 if(grid[x][y] == 1 && father[idx] == idx && this.size[idx] <= 2000 && this.size[idx] >= 20) {
-                    System.out.println(this.size[idx]);
+//                    System.out.println(this.size[idx]);
                     res.add(idx);
                 }
             }
@@ -62,33 +67,37 @@ public class Test {
 
         public int[] getBorder(int fIdx) {
             int[] res = new int[4];
-            res[0] = res[2] = fIdx/height;
-            res[1] = res[3] = fIdx%height;
+            res[0] = res[2] = fIdx/this.height;
+            res[1] = res[3] = fIdx%this.height;
             int c = 0;
             for (int i = 0; i < this.size.length-1; i++) {
                 if(findF(i) == fIdx) {
                     c++;
-                    int x = i/height;
-                    int y = i%height;
+                    int x = i/this.height;
+                    int y = i%this.height;
                     if(x < res[0]) res[0] = x;
                     if(x > res[2]) res[2] = x;
                     if(y < res[1]) res[1] = y;
                     if(y > res[3]) res[3] = y;
                 }
             }
-            System.out.println(c);
+//            System.out.println(c);
             return res;
         }
     }
-    static int width = 0;
-    static int height = 0;
-    private final static int[][] DIRECTIONS = {{0,1},{1,0},{-1,0},{0,-1}};
-    public static void main(String[] args) throws IOException {
-        BufferedImage bimg = ImageIO.read(new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/im0003.png"));
 
-        width = bimg.getWidth();
-        height = bimg.getHeight();
-        System.out.println(width+"---"+height);
+    /**
+     * 切分出图片中不联通的区域，
+     * @param srcPath 图片必须为二值图
+     * @return BufferedImage 处理后的图片
+     * @throws IOException
+     */
+    public static BufferedImage imgDetection(String srcPath) throws IOException {
+        BufferedImage bimg = ImageIO.read(new File(srcPath));
+
+        int width = bimg.getWidth();
+        int height = bimg.getHeight();
+//        System.out.println(width+"---"+height);
         int[][] data = new int[width][height];
 
         int count = 0;
@@ -99,7 +108,7 @@ public class Test {
             }
         }
 
-        UnionFind uf = new UnionFind(width * height + 1, count);
+        UnionFind uf = new UnionFind(width * height + 1, count, width, height);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int index = i * height + j;
@@ -116,35 +125,24 @@ public class Test {
                 }
             }
         }
-        System.out.println(uf.getCount());
+//        System.out.println(uf.getCount());
 
         HashSet<Integer> fathers = uf.getFathers(data);
 
-        System.out.println("================");
+//        System.out.println("================");
 
         Graphics graphics = bimg.getGraphics();
         graphics.setColor(new Color(0, 255,0));
         for (Integer father : fathers) {
             int[] border = uf.getBorder(father);
-            System.out.println(father/height +"---"+father%height+"--"+Arrays.toString(border));
+//            System.out.println(father/height +"---"+father%height+"--"+ Arrays.toString(border));
             graphics.drawLine(border[0], border[1], border[2], border[1]);
             graphics.drawLine(border[0], border[1], border[0], border[3]);
             graphics.drawLine(border[0], border[3], border[2], border[3]);
             graphics.drawLine(border[2], border[1], border[2], border[3]);
         }
 
-        ImageIO.write(bimg, "png", new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/res.png"));
-    }
-
-
-
-    private static int getImageRgb(int i) {
-        String argb = Integer.toHexString(i);// 将十进制的颜色值转为十六进制
-        // argb分别代表透明,红,绿,蓝 分别占16进制2位
-        int r = Integer.parseInt(argb.substring(2, 4),16);//后面参数为使用进制
-        int g = Integer.parseInt(argb.substring(4, 6),16);
-        int b = Integer.parseInt(argb.substring(6, 8),16);
-        int result=(int)((r+g+b)/3);
-        return result;
+//        ImageIO.write(bimg, "png", new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/res.png"));
+        return bimg;
     }
 }

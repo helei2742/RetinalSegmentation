@@ -1,0 +1,1 @@
+/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/user/zhangsan/srcImages/Src_8419_2022-9实习证明.jpg /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/Image_Mask.png /Users/helei/develop/ideaworkspace/RetinalSegmentation/images/user/zhangsan/resImages/Res_8419_2022-9实习证明.jpg

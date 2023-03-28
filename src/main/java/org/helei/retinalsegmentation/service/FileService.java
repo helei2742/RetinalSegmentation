@@ -24,7 +24,9 @@ public interface FileService {
      * 获取上传图片url列表
      * @return
      */
-    Result getSrcImageList();
+    default Result getSrcImageList(){
+        return null;
+    }
 
     /**
      * 下载图片

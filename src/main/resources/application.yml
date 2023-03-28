@@ -4,7 +4,6 @@ server:
 #    context-path: /helei
 
 spring:
-
   datasource:
     type: com.mchange.v2.c3p0.ComboPooledDataSource
     driverClass: com.mysql.jdbc.Driver
@@ -26,6 +25,16 @@ spring:
     suffix: .html
     mode: LEGACYHTML5
     encoding: UTF-8
+  rabbitmq:
+    host: 81.68.94.6 # rabbitMQ的ip地址
+    port: 5672 # 端口
+    username: itcast
+    password: 123321
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+
 
   mail:
     host: smtp.qq.com
@@ -49,3 +58,9 @@ mybatis-plus:
 logging:
   level:
     org.helei.retinalsegmentation: debug
+
+helei:
+  script:
+    location: /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/plus.py
+    appendFile: /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/test.txt
+    maskFile: /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/Image_Mask.png
