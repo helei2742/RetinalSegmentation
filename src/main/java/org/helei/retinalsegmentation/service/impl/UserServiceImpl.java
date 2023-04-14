@@ -269,7 +269,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         UserUploadRecord uploadRecord = null;
         try {
             String username = UserHolder.getUser().getUsername();
-            String saveFile = FileUtil.saveFile(file, FileUtil.getUserUploadSrcImagePath(username));
+            String saveFile = FileUtil
+                    .saveFile(
+                            file,
+                            FileUtil.getUserUploadSrcImagePath(username),
+                            FileUtil.getSaveFileName(file.getOriginalFilename()));
+            System.out.println(saveFile);
             //记录
             uploadRecord = userUploadRecordService
                     .recordUserUpload(UserHolder.getUser().getId(), FileUtil.getSourcePath(saveFile));

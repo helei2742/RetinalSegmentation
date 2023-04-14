@@ -1,6 +1,7 @@
 package org.helei.retinalsegmentation.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.helei.retinalsegmentation.dto.RecordDTO;
 import org.helei.retinalsegmentation.dto.Result;
 import org.helei.retinalsegmentation.dto.UserInfo;
 import org.helei.retinalsegmentation.entity.UserUploadRecord;
@@ -29,4 +30,11 @@ public interface IUserUploadRecordService extends IService<UserUploadRecord> {
      * @return
      */
     UserInfo queryCount(Long uid);
+
+    /**
+     * 删除上传记录
+     * @param recordDTO
+     * @return
+     */
+    Result deleteUploadRecord(RecordDTO recordDTO);
 }

@@ -17,9 +17,10 @@ public class PythonService {
     @Value("${helei.script.maskFile}")
     private String maskFileLct;
 
-    public void useSegmentationScript(String srcPath,String savePath) throws IOException, InterruptedException{
-        System.out.println(scriptLocation+"\n"+appendFileLct);
+    @Value("${helei.script.pythonLct}")
+    private String pythonLct;
 
+    public int useSegmentationScript(String srcPath,String savePath) throws IOException, InterruptedException{
         PrintWriter fw;
         Process proc;
         try {
@@ -28,17 +29,40 @@ public class PythonService {
             fw.println(srcPath + " " + maskFileLct + " " + savePath);
             fw.flush();
 
-            proc = Runtime.getRuntime().exec("python " + scriptLocation);
-            BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String line = null;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
-            }
+            String[] args = new String[] { pythonLct, scriptLocation};
+            proc = Runtime.getRuntime().exec(args);
+            new Thread() {
+                @Override
+                public void run() {
+                    String line;
+                    try (BufferedReader stderr = new BufferedReader(new InputStreamReader(proc.getErrorStream()))){
+                        while ((line = stderr.readLine()) != null) {
+                            System.out.println("stderr:" + line);
+                        }
+                    }
+                    catch (Exception e) {
 
-            in.close();
-            proc.waitFor();
-        } catch (IOException | InterruptedException e) {
-            throw e;
+                    }
+                }
+            }.start();
+            new Thread() {
+                @Override
+                public void run() {
+                    String line;
+                    try ( BufferedReader stdout = new BufferedReader(new InputStreamReader(proc.getInputStream()))){
+                        while ((line = stdout.readLine()) != null) {
+                            System.out.println("stdout:" + line);
+                        }
+                    }
+                    catch (Exception e) {
+
+                    }
+                }
+            }.start();
+            return proc.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return -1;
     }
 }

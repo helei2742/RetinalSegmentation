@@ -16,7 +16,7 @@ public class FileUtil {
      * @return
      */
     public static String getFileFromUrl(String url){
-        String[] split = url.split("/");
+        String[] split = separator.equals("/")?url.split(separator):url.split("\\\\");
         return split[split.length-1];
     }
 
@@ -28,12 +28,12 @@ public class FileUtil {
      * @return  返回保存路径
      * @throws IOException
      */
-    public static String saveFile(MultipartFile file, String path) throws IOException {
+    public static String saveFile(MultipartFile file, String path, String fileName) throws IOException {
 
         if(file==null) return "";
-        String fileName = file.getOriginalFilename();
-
-        fileName = getSaveFileName(fileName);
+//        String fileName = file.getOriginalFilename();
+//
+//        fileName = getSaveFileName(fileName);
         File f = new File(path);
         if(!f.exists()){
             f.mkdirs();
@@ -48,14 +48,14 @@ public class FileUtil {
         File file = new File(path);
         if(!file.exists()) file.exists();
     }
+
     /**
      * 获取保存时的文件名
      * @param fileName
      * @return
      */
     public static String getSaveFileName(String fileName){
-        return "Src_"+ RandomUtil.randomNumbers(4) +"_"
-                + fileName;
+        return "Src_"+ RandomUtil.randomNumbers(4) +"_" + System.currentTimeMillis() + fileName;
     }
 
     /**
@@ -119,8 +119,10 @@ public class FileUtil {
 
 
     public static String contextPath;
+    public static String separator;
     static {
         contextPath = System.getProperty("user.dir");
+        separator =  File.separator;
     }
 
     /**
@@ -129,7 +131,8 @@ public class FileUtil {
      * @return
      */
     public static String getResFileNameFromSrcPath(String src) {
-        String[] split = src.split("/");
+
+        String[] split = separator.equals("/")?src.split(separator):src.split("\\\\");
         return split[split.length-1].replaceFirst("Src", "Res");
     }
 
@@ -139,7 +142,7 @@ public class FileUtil {
      * @return
      */
     public static String getTempUploadSrcImagePath(String idNumber) {
-        return contextPath + "/images/temp/srcImages/" + idNumber;
+        return contextPath + separator+"images"+separator+"temp"+separator+"srcImages"+separator+ idNumber;
     }
 
     /**
@@ -148,7 +151,7 @@ public class FileUtil {
      * @return
      */
     public static String getTempResultImgPath(String idNumber) {
-        return contextPath + "/images/temp/resImages/" + idNumber;
+        return contextPath + separator+"images"+separator+"temp"+separator+"resImages"+separator+ idNumber;
     }
 
 
@@ -158,7 +161,7 @@ public class FileUtil {
      * @return
      */
     public static String getUserUploadSrcImagePath(String username) {
-        return contextPath + "/images/user/"+username+"/srcImages";
+        return contextPath + separator+ "images"+separator+"user"+separator+username+separator+"srcImages";
     }
 
     /**
@@ -167,7 +170,7 @@ public class FileUtil {
      * @return
      */
     public static String getUserUploadResImagePath(String username) {
-        return contextPath + "/images/user/"+username+"/resImages";
+        return contextPath +separator+"images"+separator+"user"+separator+username+separator+"resImages";
     }
 
     /**
@@ -176,7 +179,7 @@ public class FileUtil {
      * @return
      */
     public static String getFilePathFromCTP(String path) {
-        return contextPath + "/" + path;
+        return contextPath + separator + path;
     }
 
     /**
@@ -195,6 +198,8 @@ public class FileUtil {
      * @return
      */
     public static String getSourcePath(String truePath) {
-        return truePath.split(contextPath)[1];
+        String substring = truePath.substring(contextPath.length());
+        System.out.println(substring);
+        return truePath.substring(contextPath.length());
     }
 }

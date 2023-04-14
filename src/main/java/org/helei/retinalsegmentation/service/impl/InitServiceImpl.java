@@ -92,7 +92,7 @@ public class InitServiceImpl implements InitService {
                 }
             }
 
-            saveFile = FileUtil.saveFile(file, imagePath);
+            saveFile = FileUtil.saveFile(file, imagePath, FileUtil.getSaveFileName(file.getOriginalFilename()));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.fail("保存文件出错");

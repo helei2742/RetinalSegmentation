@@ -108,10 +108,14 @@ public class DetectionUtil {
             }
         }
 
+        BufferedImage rgb = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         UnionFind uf = new UnionFind(width * height + 1, count, width, height);
+
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
+                rgb.setRGB(i, j, bimg.getRGB(i, j));
                 int index = i * height + j;
+
                 if(data[i][j] == 0xFFFFFFFF) {
                     data[i][j] = 1;
                     for (int[] direction : DIRECTIONS) {
@@ -131,7 +135,7 @@ public class DetectionUtil {
 
 //        System.out.println("================");
 
-        Graphics graphics = bimg.getGraphics();
+        Graphics graphics = rgb.getGraphics();
         graphics.setColor(new Color(0, 255,0));
         for (Integer father : fathers) {
             int[] border = uf.getBorder(father);
@@ -143,6 +147,6 @@ public class DetectionUtil {
         }
 
 //        ImageIO.write(bimg, "png", new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/res.png"));
-        return bimg;
+        return rgb;
     }
 }

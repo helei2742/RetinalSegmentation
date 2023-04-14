@@ -45,7 +45,7 @@ public class ImgResolveServiceImpl implements ImgResolveService {
         String idNumber = IdNumberHolder.getIdNumber();
 
         String resultBase = FileUtil.getTempResultImgPath(idNumber);
-        String resImgPath = resultBase + "/" + FileUtil.getResFileNameFromSrcPath(srcImgPath);
+        String resImgPath = resultBase + File.separator + FileUtil.getResFileNameFromSrcPath(srcImgPath);
 
         MQDTO mq = new MQDTO(false, trueSrcPath, resImgPath);
         rabbitTemplate.convertAndSend(RabbitMQConfig.DIRECT_EXCHANGE_NAME,
@@ -58,7 +58,7 @@ public class ImgResolveServiceImpl implements ImgResolveService {
     public Result isHaveSegmentation(String srcImgPath) {
         String idNumber = IdNumberHolder.getIdNumber();
         String resultBase = FileUtil.getTempResultImgPath(idNumber);
-        String resImgPath = resultBase + "/" + FileUtil.getResFileNameFromSrcPath(srcImgPath);
+        String resImgPath = resultBase + File.separator + FileUtil.getResFileNameFromSrcPath(srcImgPath);
         File file = new File(resImgPath);
         if(file.isFile()) {
             return Result.ok(resImgPath.split(FileUtil.contextPath)[1]);
@@ -81,7 +81,6 @@ public class ImgResolveServiceImpl implements ImgResolveService {
             return Result.fail("不存在该记录");
         }
 
-        //TODO 用消息队列异步处理 注意事物，，麻烦就懒得写了
         boolean update = uploadRecordService.update()
                 .eq("id", recordId).set("state", 1).update();
         if(!update) {
@@ -91,7 +90,7 @@ public class ImgResolveServiceImpl implements ImgResolveService {
         //调用脚本，处理图像，返回处理结果path
         String srcLocation = FileUtil.getTruePath(record.getSrcLocation());
         String resImageBase = FileUtil.getUserUploadResImagePath(one.getUsername());
-        String resImgPath = resImageBase + "/" + FileUtil.getResFileNameFromSrcPath(record.getSrcLocation());
+        String resImgPath = resImageBase +  File.separator + FileUtil.getResFileNameFromSrcPath(record.getSrcLocation());
 
         MQDTO mq = new MQDTO(true, srcLocation, resImgPath);
         mq.setRecordId(recordId);

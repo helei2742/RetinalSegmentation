@@ -47,5 +47,6 @@ public class UserUploadRecord implements Serializable {
       private LocalDateTime updateTime;
 
       @ApiModelProperty("是否有效")
+      @TableLogic
       private Boolean isValid;
 }

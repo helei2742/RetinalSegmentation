@@ -5,6 +5,7 @@ import com.rabbitmq.client.Channel;
 import org.helei.retinalsegmentation.dto.MQDTO;
 import org.helei.retinalsegmentation.service.IUserUploadRecordService;
 import org.helei.retinalsegmentation.service.PythonService;
+import org.helei.retinalsegmentation.utils.FileUtil;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,20 +32,21 @@ public class MyAckListener {
     @RabbitListener(queues = "segmentation_queue_1")
     public void myAckListener(String mqDTOJson, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
 
-        System.out.println(mqDTOJson);
         MQDTO mqdto = JSONUtil.toBean(mqDTOJson, MQDTO.class);
         try {
             if(!mqdto.isUser()){
                 pythonService.useSegmentationScript(mqdto.getSrcLct(), mqdto.getResLct());
             }else {
                 long st = System.currentTimeMillis();
-                pythonService.useSegmentationScript(mqdto.getSrcLct(), mqdto.getResLct());
 
-                uploadRecordService.update()
-                        .eq("id", mqdto.getRecordId())
-                        .set("state", 2)
-                        .set("segmentation_time", System.currentTimeMillis() - st)
-                        .set("res_location", mqdto.getResLct()).update();
+                int f = pythonService.useSegmentationScript(mqdto.getSrcLct(), mqdto.getResLct());
+                if(f == 0){
+                    uploadRecordService.update()
+                            .eq("id", mqdto.getRecordId())
+                            .set("state", 2)
+                            .set("segmentation_time", System.currentTimeMillis() - st)
+                            .set("res_location", FileUtil.getSourcePath(mqdto.getResLct())).update();
+                }
             }
 
             /**
@@ -64,7 +66,6 @@ public class MyAckListener {
              */
             channel.basicNack(tag,false,true);
         }
-
     }
 
 }

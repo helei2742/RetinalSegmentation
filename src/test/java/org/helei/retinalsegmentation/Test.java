@@ -83,8 +83,29 @@ public class Test {
     static int width = 0;
     static int height = 0;
     private final static int[][] DIRECTIONS = {{0,1},{1,0},{-1,0},{0,-1}};
+
+    public void binaryImage() throws IOException {
+        File file = new File("D:\\ideaworkspace\\retinalsegmentation\\retinalsegmentation\\images\\testB.png");
+        BufferedImage image = ImageIO.read(file);
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        BufferedImage grayImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);//重点，技巧在这个参数BufferedImage.TYPE_BYTE_BINARY
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int rgb = image.getRGB(i, j);
+                grayImage.setRGB(i, j, rgb);
+            }
+        }
+
+        File newFile = new File("D:\\ideaworkspace\\retinalsegmentation\\retinalsegmentation\\images\\test.png");
+        ImageIO.write(grayImage, "jpg", newFile);
+
+    }
+
     public static void main(String[] args) throws IOException {
-        BufferedImage bimg = ImageIO.read(new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/im0003.png"));
+        BufferedImage bimg = ImageIO.read(new File("D:\\ideaworkspace\\retinalsegmentation\\retinalsegmentation\\images\\test2.png"));
 
         width = bimg.getWidth();
         height = bimg.getHeight();
@@ -98,11 +119,14 @@ public class Test {
                 if(data[i][j] == 0xFFFFFFFF) count++;
             }
         }
-
+        BufferedImage rgb = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         UnionFind uf = new UnionFind(width * height + 1, count);
+
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
+                rgb.setRGB(i, j, bimg.getRGB(i, j));
                 int index = i * height + j;
+
                 if(data[i][j] == 0xFFFFFFFF) {
                     data[i][j] = 1;
                     for (int[] direction : DIRECTIONS) {
@@ -122,7 +146,8 @@ public class Test {
 
         System.out.println("================");
 
-        Graphics graphics = bimg.getGraphics();
+
+        Graphics graphics = rgb.getGraphics();
         graphics.setColor(new Color(0, 255,0));
         for (Integer father : fathers) {
             int[] border = uf.getBorder(father);
@@ -133,7 +158,7 @@ public class Test {
             graphics.drawLine(border[2], border[1], border[2], border[3]);
         }
 
-        ImageIO.write(bimg, "png", new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/res.png"));
+        ImageIO.write(rgb, "png", new File("D:\\ideaworkspace\\retinalsegmentation\\retinalsegmentation\\images\\res.png"));
     }
 
 
