@@ -42,4 +42,14 @@ public class RedisConstants {
      * 登陆用户存在redis的key的过期时间，天
      */
     public static final long USER_LOGIN_TOKEN_TTL = 7;
+
+    /**
+     * 病人绑定码 key
+     */
+    public static final String PATIENT_BIND_CODE_KEY = "patient:bind:code:";
+    /**
+     * 病人绑定码 过期时间， 分钟
+     */
+    public static final Long PATIENT_BIND_CODE_TTL = 30l;
+
 }

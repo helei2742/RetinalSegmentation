@@ -97,4 +97,9 @@ public class UserController {
     public void imgDetection(String path, HttpServletResponse response) {
         imgResolveService.imgDetection(path, response);
     }
+
+    @PostMapping("/imgCoincide")
+    public void imgCoincide(Long recordId, HttpServletResponse response) {
+        imgResolveService.imgCoincide(recordId, response);
+    }
 }

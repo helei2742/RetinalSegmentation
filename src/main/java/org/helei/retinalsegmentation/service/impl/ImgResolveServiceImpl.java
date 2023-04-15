@@ -41,7 +41,7 @@ public class ImgResolveServiceImpl implements ImgResolveService {
     @Override
     public Result imgSegmentation(String srcImgPath) {
 
-        String trueSrcPath = FileUtil.getTruePath(srcImgPath);
+        String trueSrcPath = FileUtil.getLocalPath(srcImgPath);
         String idNumber = IdNumberHolder.getIdNumber();
 
         String resultBase = FileUtil.getTempResultImgPath(idNumber);
@@ -88,7 +88,7 @@ public class ImgResolveServiceImpl implements ImgResolveService {
         }
 
         //调用脚本，处理图像，返回处理结果path
-        String srcLocation = FileUtil.getTruePath(record.getSrcLocation());
+        String srcLocation = FileUtil.getLocalPath(record.getSrcLocation());
         String resImageBase = FileUtil.getUserUploadResImagePath(one.getUsername());
         String resImgPath = resImageBase +  File.separator + FileUtil.getResFileNameFromSrcPath(record.getSrcLocation());
 
@@ -106,7 +106,7 @@ public class ImgResolveServiceImpl implements ImgResolveService {
     public void imgDetection(String imgPath, HttpServletResponse response) {
         try {
 //            System.out.println(imgPath);
-            BufferedImage img = DetectionUtil.imgDetection(FileUtil.getTruePath(imgPath));
+            BufferedImage img = DetectionUtil.imgDetection(FileUtil.getLocalPath(imgPath));
             response.setContentType("image/png");
             response.setHeader("Cache-Control", "no-cache");
             response.setHeader("Expire", "0");
@@ -117,4 +117,24 @@ public class ImgResolveServiceImpl implements ImgResolveService {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void imgCoincide(Long recordId, HttpServletResponse response) {
+        UserUploadRecord record = uploadRecordService.query().eq("id", recordId).one();
+        if(record == null || record.getState() != 2) {
+            return;
+        }
+        try {
+            BufferedImage img = DetectionUtil.imgComp(FileUtil.getLocalPath(record.getSrcLocation()),
+                    FileUtil.getLocalPath(record.getResLocation()));
+            response.setContentType("image/png");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Expire", "0");
+            response.setHeader("Pragma", "no-cache");
+            ImageIO.write(img, "PNG", response.getOutputStream());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 package org.helei.retinalsegmentation.utils;
 
+import cn.hutool.core.util.StrUtil;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -148,5 +150,36 @@ public class DetectionUtil {
 
 //        ImageIO.write(bimg, "png", new File("/Users/helei/develop/ideaworkspace/RetinalSegmentation/images/res.png"));
         return rgb;
+    }
+
+
+    public static BufferedImage imgComp(String srcPath, String resPath) throws IOException {
+        if(StrUtil.isBlank(srcPath) || StrUtil.isBlank(resPath)) {
+            throw new RuntimeException("路径含空");
+        }
+        File src = new File(srcPath);
+        File res = new File(resPath);
+        if(!src.isFile() || !res.isFile()) {
+            throw new RuntimeException("没有该文件");
+        }
+        BufferedImage srcImg = ImageIO.read(src);
+        BufferedImage resImg = ImageIO.read(res);
+
+        int sW = srcImg.getWidth(), sH = srcImg.getHeight();
+        int rW = srcImg.getWidth(), rH = srcImg.getHeight();
+        if (!(sW == rW && sH == rH)) {
+            throw new RuntimeException("图片大小有误");
+        }
+
+        for (int i = 0; i < sW; i++) {
+            for (int j = 0; j < sH; j++) {
+                int rgbRes = resImg.getRGB(i, j);
+                if (rgbRes == 0xFFFFFFFF) {
+                    srcImg.setRGB(i, j, new Color(0, 255, 0).getRGB());
+                }
+            }
+        }
+
+        return srcImg;
     }
 }

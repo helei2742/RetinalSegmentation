@@ -11,9 +11,9 @@ spring:
     password: 962464HeLei
     jdbcUrl: jdbc:mysql://localhost:3306/retinal_segmentation?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
   redis:
-    host: 127.0.0.1
+    host: 81.68.94.6
     port: 6379
-    password: 962464HeLei
+    Auth: 962464
     lettuce:
       pool:
         max-active: 10
@@ -52,8 +52,9 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+
 
 logging:
   level:
@@ -64,3 +65,4 @@ helei:
     location: /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/plus.py
     appendFile: /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/test.txt
     maskFile: /Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/static/Image_Mask.png
+    pythonLct: D:\anoconda\python.exe

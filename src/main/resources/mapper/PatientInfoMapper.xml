@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.helei.retinalsegmentation.mapper.PatientInfoMapper">
+
+
+    <select id="conditionQueryPatientInfo"
+            resultType="org.helei.retinalsegmentation.entity.PatientInfo"
+            parameterType="org.helei.retinalsegmentation.query.PatientQuery">
+        select
+            pi.*
+        from
+            tb_patient_info pi
+        <where>
+            pi.doctor_id = #{doctorId}
+            <if test="patientName != null">
+                and pi.name = #{patientName}
+            </if>
+            <if test="gender != null">
+                and pi.gender = #{gender}
+            </if>
+            <if test="nativeArea != null">
+                and pi.native_area = #{nativeArea}
+            </if>
+            <if test="idCard != null">
+                and pi.id_card = #{idCard}
+            </if>
+            <if test="diagnoseType != null and diagnoseType != -1">
+                and pi.diagnose_type = #{diagnoseType}
+            </if>
+            and pi.is_valid = 1
+        </where>
+        order by pi.create_time desc
+    </select>
+
+
+</mapper>

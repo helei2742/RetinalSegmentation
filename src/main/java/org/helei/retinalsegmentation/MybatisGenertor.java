@@ -23,7 +23,7 @@ public class MybatisGenertor {
                                     "/Users/helei/develop/ideaworkspace/RetinalSegmentation/src/main/resources/mapper")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("tb_user_user_upload_record") // 设置需要生成的表名
+                    builder.addInclude("tb_patient_info") // 设置需要生成的表名
                             .addTablePrefix("tb_", "c_"); // 设置过滤表前缀
                 })
 //                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

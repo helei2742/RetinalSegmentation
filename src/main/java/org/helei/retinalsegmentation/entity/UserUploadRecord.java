@@ -26,6 +26,9 @@ public class UserUploadRecord implements Serializable {
       @TableId(value = "id", type = IdType.AUTO)
       private Long id;
 
+      @ApiModelProperty("该分割记录绑定的病患id")
+      private Long patientId;
+
       @ApiModelProperty("当前状态0:上传文件但没开始分割，1：上传文件正在分割，2:上传文件且分割完毕")
       private Integer state;
 

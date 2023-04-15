@@ -32,4 +32,10 @@ public interface ImgResolveService {
      * 对分割结果进一步处理，画出可能有问题的区域
      */
     void imgDetection(String imgPath, HttpServletResponse response);
+
+    /**
+     * 将分割结果描绘到原图上
+     * @param recordId
+     */
+    void imgCoincide(Long recordId, HttpServletResponse response);
 }

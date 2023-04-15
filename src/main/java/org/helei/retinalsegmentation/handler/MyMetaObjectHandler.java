@@ -27,6 +27,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
         this.setFieldValByName("createTime", LocalDateTime.now(), metaObject);
         this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
+        this.setFieldValByName("isValid", true, metaObject);
         this.setFieldValByName("icon", "user/icon/defalut.png", metaObject);
     }
 
@@ -42,7 +43,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     }
 
 
-/*    // 源码是默认有值不覆盖,如果提供的值为null也不填充，updateTime 一般都是有值的，所以重写
+    // 源码是默认有值不覆盖,如果提供的值为null也不填充，updateTime 一般都是有值的，所以重写
     @Override
     public MetaObjectHandler strictFillStrategy(MetaObject metaObject, String fieldName, Supplier<?> fieldVal) {
 
@@ -54,6 +55,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             setFieldValByName(fieldName, fieldVal.get(), metaObject);
         }
         return this;
-    }*/
+    }
 
 }

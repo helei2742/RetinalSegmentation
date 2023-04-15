@@ -188,7 +188,7 @@ public class FileUtil {
      * @param srcImgPath
      * @return
      */
-    public static String getTruePath(String srcImgPath) {
+    public static String getLocalPath(String srcImgPath) {
         return contextPath + srcImgPath;
     }
 

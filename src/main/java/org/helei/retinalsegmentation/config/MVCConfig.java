@@ -34,7 +34,8 @@ public class MVCConfig implements WebMvcConfigurer {
         //刷新拦截器
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
                 .addPathPatterns("/user/**",
-                        "/userUploadRecord/**")
+                        "/userUploadRecord/**",
+                        "/patientInfo/**")
                 .excludePathPatterns(
                         "/user/register",
                         "/user/confirm/**",
@@ -44,7 +45,8 @@ public class MVCConfig implements WebMvcConfigurer {
         //登录拦截器
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/user/**",
-                        "/userUploadRecord/**")
+                        "/userUploadRecord/**",
+                        "/patientInfo/**")
                 .excludePathPatterns(
                         "/user/register",
                         "/user/confirm/**",
