@@ -48,5 +48,10 @@ public class PatientInfoController {
         String bindCode = map.get("bindCode");
         return patientInfoService.bindRecord(recordId, bindCode);
     }
+
+    @PostMapping("/getInfoById")
+    public Result getInfoById(@RequestBody PatientInfo patientInfo) {
+        return patientInfoService.getInfoBuId(patientInfo.getId());
+    }
 }
 

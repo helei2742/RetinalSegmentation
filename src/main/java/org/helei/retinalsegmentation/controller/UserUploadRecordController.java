@@ -5,10 +5,7 @@ import org.helei.retinalsegmentation.dto.Result;
 import org.helei.retinalsegmentation.service.IUserUploadRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -28,6 +25,12 @@ public class UserUploadRecordController {
     @PostMapping("/deleteUploadRecord")
     public Result deleteUploadRecord(@RequestBody RecordDTO recordDTO) {
         return userUploadRecordService.deleteUploadRecord(recordDTO);
+    }
+
+    @GetMapping("/queryById")
+    public Result queryById(Long recordId){
+        if(recordId == null) return Result.fail("参数缺失");
+        return Result.ok(userUploadRecordService.query().eq("id", recordId).one());
     }
 }
 

@@ -40,6 +40,7 @@ public class User implements Serializable {
       private String email;
 
       @ApiModelProperty("用户是否有效")
+      @TableLogic
       private Boolean isValid;
 
       @ApiModelProperty("创建日期")

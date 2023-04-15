@@ -118,6 +118,16 @@ public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, Patie
         return Result.ok();
     }
 
+    @Override
+    public Result getInfoBuId(Long id) {
+        if(id == null) {
+            return Result.fail("缺少参数");
+        }
+        PatientInfo info = query().eq("id", id).one();
+
+        return Result.ok(info);
+    }
+
     @Transactional
     public void bindRecordTrans(Long recordId, Long patientId, char c){
         update().eq("id", patientId)

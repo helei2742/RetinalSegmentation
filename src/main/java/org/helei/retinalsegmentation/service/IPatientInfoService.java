@@ -45,4 +45,11 @@ public interface IPatientInfoService extends IService<PatientInfo> {
      * @return
      */
     Result bindRecord(Long recordId, String bindCode);
+
+    /**
+     * 根据id查询病人信息
+     * @param id
+     * @return
+     */
+    Result getInfoBuId(Long id);
 }

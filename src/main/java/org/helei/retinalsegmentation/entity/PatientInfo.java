@@ -39,6 +39,9 @@ public class PatientInfo implements Serializable {
       @ApiModelProperty("身份证号")
       private String idCard;
 
+      @ApiModelProperty("邮箱")
+      private String email;
+
       @ApiModelProperty("籍贯")
       private String nativeArea;
 
