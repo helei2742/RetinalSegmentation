@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.helei.retinalsegmentation.dto.Result;
 import org.helei.retinalsegmentation.entity.PatientInfo;
 import org.helei.retinalsegmentation.query.PatientQuery;
+import org.python.antlr.ast.Str;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,9 +35,9 @@ public interface IPatientInfoService extends IService<PatientInfo> {
     /**
      * 为病患创建绑定码
      * @param patientId
-     * @param response
+
      */
-    Result getBindCode(Long patientId, Character c, HttpServletResponse response);
+    String getBindCode(Long patientId, Character c);
 
     /**
      * 绑定分割记录
@@ -52,4 +53,12 @@ public interface IPatientInfoService extends IService<PatientInfo> {
      * @return
      */
     Result getInfoBuId(Long id);
+
+    /**、
+     * 根据病人id生成对应二维码
+     * @param id
+     * @param response
+     * @return
+     */
+    Result getQRCode(Long id, Character c,  HttpServletResponse response);
 }

@@ -11,6 +11,7 @@ import org.helei.retinalsegmentation.mapper.PatientInfoMapper;
 import org.helei.retinalsegmentation.query.PatientQuery;
 import org.helei.retinalsegmentation.service.IPatientInfoService;
 import org.helei.retinalsegmentation.service.IUserUploadRecordService;
+import org.helei.retinalsegmentation.utils.QRCodeUtil;
 import org.helei.retinalsegmentation.utils.RedisConstants;
 import org.helei.retinalsegmentation.utils.SystemConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -74,7 +76,7 @@ public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, Patie
     private static Random random = new Random();
 
     @Override
-    public Result getBindCode(Long patientId, Character c, HttpServletResponse response) {
+    public String getBindCode(Long patientId, Character c) {
         StringBuilder randomStr = new StringBuilder();
         randomStr.append(c);
         for (int i = 0; i < SystemConstants.PATIENT_BIND_CODE_LENGTH; i++) {
@@ -87,8 +89,9 @@ public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, Patie
         stringRedisTemplate.opsForValue().set(key, String.valueOf(patientId),
                 RedisConstants.PATIENT_BIND_CODE_TTL, TimeUnit.MINUTES);
 
-        return Result.ok(randomStr);
+        return randomStr.toString();
     }
+
 
     @Override
     public Result bindRecord(Long recordId, String bindCode) {
@@ -118,6 +121,16 @@ public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, Patie
         return Result.ok();
     }
 
+    @Transactional
+    public void bindRecordTrans(Long recordId, Long patientId, char c){
+        update().eq("id", patientId)
+                .set(c=='l'?"left_diagnose_record_id":"right_diagnose_record_id", recordId)
+                .update();
+        userUploadRecordService.update().eq("id", recordId)
+                .set("patient_id", patientId)
+                .update();
+    }
+
     @Override
     public Result getInfoBuId(Long id) {
         if(id == null) {
@@ -128,13 +141,23 @@ public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, Patie
         return Result.ok(info);
     }
 
-    @Transactional
-    public void bindRecordTrans(Long recordId, Long patientId, char c){
-        update().eq("id", patientId)
-                .set(c=='l'?"left_diagnose_record_id":"right_diagnose_record_id", recordId)
-                .update();
-        userUploadRecordService.update().eq("id", recordId)
-                .set("patient_id", patientId)
-                .update();
+    @Override
+    public Result getQRCode(Long id,  Character c, HttpServletResponse response) {
+        if(id == null) {
+            return Result.fail("参数缺失");
+        }
+        Integer count = patientInfoService.query().eq("id", id).count();
+        if(count != 1) return Result.fail("不存在该病人");
+        if(!c.equals('l') && !c.equals('r') && !c.equals('a')){
+            return Result.fail("参数错误");
+        }
+        String bindCode = getBindCode(id, c);
+        System.out.println(bindCode);
+        try {
+            QRCodeUtil.createCodeToOutputStream(bindCode, response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.ok();
     }
 }
